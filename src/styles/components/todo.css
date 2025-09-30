@@ -39,7 +39,7 @@
 }
 
 
-/*delete-all-button*/
+
 .todo__delete-all-button {
     padding: 0;
     background-color: transparent;
@@ -55,7 +55,7 @@
     opacity: 0;
     visibility: hidden;
 }
-/*delete-all-button*/
+
 
 
 .todo__list:empty, 
