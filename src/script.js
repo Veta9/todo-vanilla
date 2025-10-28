@@ -41,6 +41,7 @@ class Todo {
          }
 
       this.render()
+      this.bindEvents()
      }
 
 
@@ -57,10 +58,9 @@ class Todo {
          const parsedData = JSON.parse(rawData)
          return Array.isArray(parsedData) ? parsedData : []
          
-
       } catch {
          
-         console.error('Todo items pars error')
+         console.error('Todo items parse error')
          return []
       }
      }
@@ -82,8 +82,8 @@ class Todo {
 
       const items = this.state.filteredItems ?? this.state.items
 
-      this.listElement.innerHTML = items.map( ({ title, id, isChecked }) => {
-         `<li class="todo__item todo-item" data-js-todo-item>
+      this.listElement.innerHTML = items.map( ({ id, title, isChecked }) => `
+      <li class="todo__item todo-item" data-js-todo-item>
          <input 
          class="todo-item__checkbox"
          id="${id}"
@@ -108,8 +108,8 @@ class Todo {
              <path d="M15 5L5 15M5 5L15 15" stroke="#757575" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
          </svg>                    
          </button>
-     </li>`
-      }).join('')
+     </li>
+     `).join('')
 
       const isEmptyFilteredItems = this.state.filteredItems?.length === 0
       const isEmptyItems = this.state.items.length === 0
@@ -120,19 +120,125 @@ class Todo {
       : ''
      }
 
-     addItem() {
+     addItem(title) {
       this.state.items.push({
          id: crypto?.randomUUID() ?? Date.now().toString(),
          title,
          isChecked: false,
       })
+
+      this.saveItemsToLocalStorage()
+      this.render()
      }
 
-     deleteItem() {}
+     deleteItem(id) {
+      this.state.items = this.state.items.filter((item) => item.id !== id)
 
-     toggleCheckedItem() {
-
+      this.saveItemsToLocalStorage()
+      this.render()
      }
+
+     toggleCheckedState(id) {
+      this.state.items = this.state.items.map((item) => {
+         if (item.id === id) {
+
+           return {
+             ...item,
+             isChecked: !item.isChecked,
+           }
+
+         }
+   
+         return item
+       })
+
+       this.saveItemsToLocalStorage()
+       this.render()
+     }
+
+     filter() {
+      const queryFormatted = this.state.searchQuery.toLowerCase()
+  
+      this.state.filteredItems = this.state.items.filter(({ title }) => {
+        const titleFormatted = title.toLowerCase()
+  
+        return titleFormatted.includes(queryFormatted)
+      })
+  
+      this.render()
+    }
+  
+    resetFilter() {
+      this.state.filteredItems = null
+      this.state.searchQuery = ''
+      this.render()
+    }
+  
+    onNewTaskFormSubmit = (event) => {
+      event.preventDefault()
+  
+      const newTodoItemTitle = this.newTaskInputElement.value
+  
+      if (newTodoItemTitle.trim().length > 0) {
+        this.addItem(newTodoItemTitle)
+        this.resetFilter()
+        this.newTaskInputElement.value = ''
+        this.newTaskInputElement.focus()
+      }
+    }
+  
+    onSearchTaskFormSubmit = (event) => {
+      event.preventDefault()
+    }
+  
+    onSearchTaskInputChange = ({ target }) => {
+      const value = target.value.trim()
+  
+      if (value.length > 0) {
+        this.state.searchQuery = value
+        this.filter()
+      } else {
+        this.resetFilter()
+      }
+    }
+  
+    onDeleteAllButtonClick = () => {
+      const isConfirmed = confirm('Are you sure you want to delete all?')
+  
+      if (isConfirmed) {
+        this.state.items = []
+        this.saveItemsToLocalStorage()
+        this.render()
+      }
+    }
+  
+    onClick = ({ target }) => {
+      if (target.matches(this.selectors.itemDeleteButton)) {
+        const itemElement = target.closest(this.selectors.item)
+        const itemCheckboxElement = itemElement.querySelector(this.selectors.itemCheckbox)
+  
+        itemElement.classList.add(this.stateClasses.isDisappearing)
+  
+        setTimeout(() => {
+          this.deleteItem(itemCheckboxElement.id)
+        }, 400)
+      }
+    }
+  
+    onChange = ({ target }) => {
+      if (target.matches(this.selectors.itemCheckbox)) {
+        this.toggleCheckedState(target.id)
+      }
+    }
+  
+    bindEvents() {
+      this.newTaskFormElement.addEventListener('submit', this.onNewTaskFormSubmit)
+      this.searchTaskFormElement.addEventListener('submit', this.onSearchTaskFormSubmit)
+      this.searchTaskInputElement.addEventListener('input', this.onSearchTaskInputChange)
+      this.deleteAllButtonElement.addEventListener('click', this.onDeleteAllButtonClick)
+      this.listElement.addEventListener('click', this.onClick)
+      this.listElement.addEventListener('change', this.onChange)
+    }
 }
 
 new Todo()
