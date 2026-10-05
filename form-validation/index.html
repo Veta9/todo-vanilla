@@ -26,7 +26,7 @@
           required 
           minlength="3"
         >
-        <span class="error-message" id="usernameError">Имя должно содержать не менее 3 символов.</span>
+        <span class="error-message" id="usernameError" data-js-field-error="">Имя должно содержать не менее 3 символов.</span>
       </div>
 
    
@@ -39,7 +39,7 @@
           placeholder="example@mail.com"
           required
         >
-        <span class="error-message" id="emailError">Введите корректный адрес электронной почты.</span>
+        <span class="error-message" id="emailError" data-js-field-error="">Введите корректный адрес электронной почты.</span>
       </div>
 
     
@@ -54,7 +54,7 @@
           minlength="6"
           pattern=".*[0-9].*"
         >
-        <span class="error-message" id="passwordError">Пароль должен быть от 6 символов и содержать хотя бы одну цифру.</span>
+        <span class="error-message" id="passwordError" data-js-field-error="">Пароль должен быть от 6 символов и содержать хотя бы одну цифру.</span>
       </div>
 
   
@@ -67,14 +67,19 @@
           placeholder="Повторите пароль"
           required
         >
-        <span class="error-message" id="confirmPasswordError">Пароли не совпадают.</span>
+        <span class="error-message" id="confirmPasswordError" data-js-field-error="">Пароли не совпадают.</span>
       </div>
 
    
       <div class="form-group checkbox-group">
-        <input type="checkbox" id="agree" name="agree" required>
+        <input 
+        type="checkbox" 
+        id="agree" 
+        name="agree" 
+        required
+      >
         <label for="agree">Я согласен с условиями использования</label>
-        <span class="error-message" id="agreeError">Необходимо ваше согласие.</span>
+        <span class="error-message" id="agreeError" data-js-field-error="">Необходимо ваше согласие.</span>
       </div>
 
       <button type="submit" class="submit-btn">Зарегистрироваться</button>
